@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UNM — Interactive Browser-Based Responsive Testing Tool</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0d0d0d;
+      --panel-bg: #161616;
+      --border: #262626;
+      --orange: #fc4b1a;
+      --text: #ffffff;
+      --muted: #888888;
+      --card-bg: #1a1a1a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Manrope", -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* Top Control Bar */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(22, 22, 22, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badge {
+      background: var(--orange);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .title {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #000;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 10px;
+    }
+
+    select, input[type="text"] {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      padding: 4px;
+    }
+
+    select {
+      cursor: pointer;
+    }
+
+    select option {
+      background: #1a1a1a;
+      color: #fff;
+    }
+
+    input[type="text"] {
+      width: 220px;
+    }
+
+    .btn {
+      background: #222;
+      border: 1px solid var(--border);
+      color: #fff;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 7px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: #2a2a2a;
+      border-color: #444;
+    }
+
+    .btn.active {
+      background: var(--orange);
+      border-color: var(--orange);
+      color: #fff;
+    }
+
+    .slider-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    input[type="range"] {
+      accent-color: var(--orange);
+      cursor: pointer;
+      width: 90px;
+    }
+
+    /* Device Toggles Bar */
+    .device-bar {
+      background: #111;
+      border-bottom: 1px solid var(--border);
+      padding: 8px 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .device-chip {
+      background: #1c1c1c;
+      border: 1px solid var(--border);
+      color: #bbb;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s ease;
+    }
+
+    .device-chip:hover {
+      color: #fff;
+      border-color: #555;
+    }
+
+    .device-chip.active {
+      background: rgba(252, 75, 26, 0.15);
+      border-color: var(--orange);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    /* Stage Canvas */
+    .stage {
+      display: flex;
+      align-items: flex-start;
+      gap: 32px;
+      padding: 32px 24px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      min-height: calc(100vh - 120px);
+    }
+
+    .viewport-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex-shrink: 0;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      transition: transform 0.2s ease;
+    }
+
+    .viewport-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4px;
+    }
+
+    .viewport-info {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .viewport-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .viewport-dim {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .viewport-status {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      background: #2a2a2a;
+      color: #88ff88;
+      font-weight: 600;
+    }
+
+    .viewport-status.overflow {
+      background: #441111;
+      color: #ff5555;
+    }
+
+    .frame-wrapper {
+      position: relative;
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #333;
+      transform-origin: top left;
+    }
+
+    iframe {
+      border: none;
+      display: block;
+      background: #000;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="badge">TEST TOOL</span>
+      <span class="title">Responsive Device Simulator</span>
+    </div>
+
+    <div class="controls">
+      <div class="input-group">
+        <label for="route-preset" style="font-size: 11px; color: var(--muted);">Page:</label>
+        <select id="route-preset" onchange="onPresetChange(this.value)">
+          <option value="/">Home (/)</option>
+          <option value="/about">About (/about)</option>
+          <option value="/services">Services (/services)</option>
+          <option value="/work">Work Portfolio (/work)</option>
+          <option value="/work/dubai-font" selected>Dubai Font (/work/dubai-font)</option>
+          <option value="/work/renuvi">Renuvi (/work/renuvi)</option>
+          <option value="/thoughts">Thoughts (/thoughts)</option>
+          <option value="/thoughts/should-i-use-ai-for-branding">AI Branding (/thoughts/...)</option>
+          <option value="/contact">Contact (/contact)</option>
+          <option value="/unmarketing-careers">Careers (/unmarketing-careers)</option>
+          <option value="/startups">Startups Landing (/startups)</option>
+          <option value="/privacy-policy">Privacy Policy (/privacy-policy)</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="custom-url" placeholder="or enter custom path / URL" />
+        <button class="btn" onclick="navigateCustom()">Go</button>
+      </div>
+
+      <div class="slider-wrap">
+        <span>Zoom:</span>
+        <input type="range" id="zoom-slider" min="40" max="100" value="80" oninput="updateScale(this.value)" />
+        <span id="zoom-val">80%</span>
+      </div>
+
+      <button class="btn" id="rotate-btn" onclick="toggleOrientation()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+        Rotate
+      </button>
+
+      <button class="btn" onclick="reloadAll()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        Reload
+      </button>
+
+      <button class="btn active" id="sync-btn" onclick="toggleSyncScroll()">
+        Sync Scroll: ON
+      </button>
+    </div>
+  </header>
+
+  <div class="device-bar" id="device-bar">
+    <!-- Populated dynamically -->
+  </div>
+
+  <main class="stage" id="stage">
+    <!-- Viewport cards populated dynamically -->
+  </main>
+
+  <script>
+    const DEVICES = [
+      { id: "iphone-se-1", name: "iPhone SE (1st gen)", width: 320, height: 568, active: true },
+      { id: "iphone-se-3", name: "iPhone SE (3rd gen)", width: 375, height: 667, active: true },
+      { id: "iphone-14", name: "iPhone 14 / 15", width: 390, height: 844, active: true },
+      { id: "iphone-15-pro", name: "iPhone 15 / 16 Pro", width: 393, height: 852, active: true },
+      { id: "iphone-15-max", name: "iPhone 15 Pro Max", width: 430, height: 932, active: true },
+      { id: "ipad-mini", name: "iPad Mini", width: 768, height: 1024, active: true },
+      { id: "ipad-pro", name: "iPad Pro 11", width: 834, height: 1194, active: false },
+      { id: "desktop-1440", name: "Desktop Ref", width: 1440, height: 900, active: false }
+    ];
+
+    let currentUrl = "/work/dubai-font";
+    let scale = 0.8;
+    let isLandscape = false;
+    let syncScroll = true;
+
+    function init() {
+      renderDeviceBar();
+      renderStage();
+
+      window.addEventListener("message", (e) => {
+        if (e.data && e.data.type === "SCROLL" && syncScroll) {
+          syncScrollTo(e.data.topRatio, e.source);
+        }
+      });
+    }
+
+    function renderDeviceBar() {
+      const bar = document.getElementById("device-bar");
+      bar.innerHTML = "";
+
+      DEVICES.forEach(dev => {
+        const chip = document.createElement("div");
+        chip.className = `device-chip ${dev.active ? "active" : ""}`;
+        chip.textContent = `${dev.name} (${dev.width}px)`;
+        chip.onclick = () => {
+          dev.active = !dev.active;
+          chip.classList.toggle("active", dev.active);
+          renderStage();
+        };
+        bar.appendChild(chip);
+      });
+    }
+
+    function renderStage() {
+      const stage = document.getElementById("stage");
+      stage.innerHTML = "";
+
+      DEVICES.filter(d => d.active).forEach(dev => {
+        const w = isLandscape ? dev.height : dev.width;
+        const h = isLandscape ? dev.width : dev.height;
+
+        const card = document.createElement("div");
+        card.className = "viewport-card";
+        card.style.width = `${Math.round(w * scale) + 24}px`;
+
+        card.innerHTML = `
+          <div class="viewport-header">
+            <div class="viewport-info">
+              <span class="viewport-title">${dev.name}</span>
+              <span class="viewport-dim">${w} × ${h}</span>
+            </div>
+            <span class="viewport-status" id="status-${dev.id}">0px Overflow</span>
+          </div>
+          <div class="frame-wrapper" style="width: ${Math.round(w * scale)}px; height: ${Math.round(h * scale)}px;">
+            <iframe
+              id="frame-${dev.id}"
+              src="${currentUrl}"
+              style="width: ${w}px; height: ${h}px; transform: scale(${scale}); transform-origin: top left;"
+            ></iframe>
+          </div>
+        `;
+
+        stage.appendChild(card);
+
+        const iframe = card.querySelector("iframe");
+        iframe.onload = () => setupIframeEvents(iframe, dev.id, w);
+      });
+    }
+
+    function setupIframeEvents(iframe, devId, targetWidth) {
+      try {
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        if (!doc) return;
+
+        // Check horizontal overflow
+        const scrollW = doc.documentElement.scrollWidth;
+        const statusEl = document.getElementById(`status-${devId}`);
+        if (scrollW > targetWidth + 1) {
+          statusEl.textContent = `+${scrollW - targetWidth}px OVERFLOW`;
+          statusEl.className = "viewport-status overflow";
+        } else {
+          statusEl.textContent = "0px Overflow (OK)";
+          statusEl.className = "viewport-status";
+        }
+
+        // Setup scroll sync listener
+        iframe.contentWindow.addEventListener("scroll", () => {
+          if (!syncScroll) return;
+          const maxScroll = doc.documentElement.scrollHeight - iframe.contentWindow.innerHeight;
+          const ratio = maxScroll > 0 ? iframe.contentWindow.scrollY / maxScroll : 0;
+          syncScrollTo(ratio, iframe.contentWindow);
+        }, { passive: true });
+      } catch (err) {
+        // Cross-origin restriction fallback
+      }
+    }
+
+    function syncScrollTo(ratio, sourceWindow) {
+      document.querySelectorAll("iframe").forEach(frame => {
+        try {
+          if (frame.contentWindow === sourceWindow) return;
+          const doc = frame.contentDocument || frame.contentWindow.document;
+          const maxScroll = doc.documentElement.scrollHeight - frame.contentWindow.innerHeight;
+          frame.contentWindow.scrollTo({ top: ratio * maxScroll, behavior: "auto" });
+        } catch (e) {}
+      });
+    }
+
+    function onPresetChange(val) {
+      currentUrl = val;
+      document.getElementById("custom-url").value = "";
+      updateAllIframes();
+    }
+
+    function navigateCustom() {
+      const val = document.getElementById("custom-url").value.trim();
+      if (val) {
+        currentUrl = val;
+        updateAllIframes();
+      }
+    }
+
+    function updateAllIframes() {
+      document.querySelectorAll("iframe").forEach(frame => {
+        frame.src = currentUrl;
+      });
+    }
+
+    function updateScale(val) {
+      scale = val / 100;
+      document.getElementById("zoom-val").textContent = `${val}%`;
+      renderStage();
+    }
+
+    function toggleOrientation() {
+      isLandscape = !isLandscape;
+      document.getElementById("rotate-btn").classList.toggle("active", isLandscape);
+      renderStage();
+    }
+
+    function reloadAll() {
+      document.querySelectorAll("iframe").forEach(frame => {
+        frame.src = frame.src;
+      });
+    }
+
+    function toggleSyncScroll() {
+      syncScroll = !syncScroll;
+      const btn = document.getElementById("sync-btn");
+      btn.textContent = `Sync Scroll: ${syncScroll ? "ON" : "OFF"}`;
+      btn.classList.toggle("active", syncScroll);
+    }
+
+    init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Audit published Sanity content
+        run: npm run audit:content
+
+      - name: Build production application
+        run: npm run build
+
+      - name: Audit routes, schemas, redirects, and assets
+        shell: bash
+        run: |
+          npm run start -- -p 3210 > /tmp/unmarketing-next.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:3210/robots.txt > /dev/null; then
+              break
+            fi
+            sleep 1
+          done
+
+          curl --fail --silent http://127.0.0.1:3210/robots.txt > /dev/null
+          npm run audit:routes -- \
+            --base-url http://127.0.0.1:3210 \
+            --canonical-origin https://www.theunmarketing.agency
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev

@@ -1,22 +1,20 @@
-build
-dist / media
-node_modules
+# dependencies
+/node_modules
+
+# Next.js
+/.next
+/out
+/.vercel
+
+# local environment files
+.env*
+!.env.example
+
+# logs and tooling
+*.log
 .DS_Store
-.env
-.next
-next-env.d.ts
-.vercel
+*.tsbuildinfo
 
-# Payload default media upload directory
-public/media/
-
-public/robots.txt
-public/sitemap*.xml
-
-
-# Playwright
-node_modules/
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
+# local credentials
+*.pem
+*.key
