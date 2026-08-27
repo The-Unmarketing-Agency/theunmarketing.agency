@@ -265,6 +265,35 @@ img {
     -webkit-backdrop-filter 450ms ease;
 }
 
+/* Special transparent header for Thoughts Article Pages */
+.site-header.transparent .site-header__shell {
+  background: rgba(17, 17, 17, 0) !important; /* Force transparent */
+  backdrop-filter: none !important; /* Remove blur effect */
+  -webkit-backdrop-filter: none !important; /* Remove blur effect */
+  box-shadow: none !important; /* Remove shadow */
+}
+
+/* Improve text contrast when transparent over light backgrounds */
+.site-header.transparent .wordmark__image,
+.site-header.transparent .site-header__desktop-nav a,
+.site-header.transparent .site-header__mobile-nav a {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5)) !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Make SVG logo have readable stroke */
+.site-header.transparent .wordmark__image {
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.7)) !important;
+}
+
+/* Even when scrolled on Thoughts pages */
+.site-header.transparent.is-scrolled .site-header__shell {
+  background: rgba(17, 17, 17, 0) !important; /* Stay transparent */
+  backdrop-filter: none !important; /* No blur */
+  -webkit-backdrop-filter: none !important; /* No blur */
+  box-shadow: none !important; /* No shadow */
+}
+
 .site-header.is-scrolled {
   padding-top: 10px;
 }

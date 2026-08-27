@@ -63,9 +63,11 @@ export function HeaderInteractive({ navigation }: HeaderInteractiveProps) {
     return () => desktopViewport.removeEventListener("change", closeOnDesktop);
   }, []);
 
+  const isThoughtArticlePage = pathname?.startsWith("/thoughts/") && pathname.split("/").filter(Boolean).length === 2;
+  
   return (
     <header
-      className={["site-header", isScrolled ? "is-scrolled" : "", isOpen ? "is-open" : ""].join(" ")}
+      className={["site-header", isScrolled ? "is-scrolled" : "", isOpen ? "is-open" : "", isThoughtArticlePage ? "transparent" : ""].join(" ")}
       ref={headerRef}
     >
       <div className="site-header__shell">
