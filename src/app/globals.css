@@ -286,6 +286,14 @@ img {
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.7)) !important;
 }
 
+/* Force white logo on transparent headers - HIGH SPECIFICITY */
+.site-header.transparent header.site-header .wordmark__image,
+.site-header.transparent header.site-header .logo {
+  filter: invert(1) !important; /* Black → White */
+  -webkit-filter: invert(1) !important; /* Safari support */
+  mix-blend-mode: difference !important; /* Adapts to background */
+}
+
 /* Even when scrolled on Thoughts pages */
 .site-header.transparent.is-scrolled .site-header__shell {
   background: rgba(17, 17, 17, 0) !important; /* Stay transparent */
