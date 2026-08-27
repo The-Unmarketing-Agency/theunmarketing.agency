@@ -87,7 +87,7 @@ a {
 
 button,
 a {
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0.3); /* White on mobile tap */
 }
 
 button {
@@ -325,12 +325,18 @@ img {
   z-index: 3;
 }
 
+/* Logo styling - needs to be visible on transparent headers */
 .wordmark__image,
 .logo {
   display: block;
-  filter: invert(1);
+  filter: invert(1);  /* Black logo → White logo */
   height: auto;
   max-height: 48px;
+}
+
+/* Ensure logo is visible on transparent headers */
+.site-header.transparent .wordmark__image {
+  filter: invert(1); /* Force white logo */
 }
 
 .site-header .wordmark__image {
