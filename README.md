@@ -273,7 +273,7 @@ All rights reserved. The Unmarketing Agency © 2026
 
 **Repository**: The-Unmarketing-Agency/theunmarketing.agency  
 **Live Website**: https://www.theunmarketing.agency  
-**Last Updated**: August 28, 2026  
+**Last Updated**: August 28, 2026 (GitHub Actions fix applied)  
 **Version**: 1.0.0  
 **Maintainer**: Gladwyn Lewis  
 **Status**: ✅ Production (JSON-LD fix pending redeploy)
