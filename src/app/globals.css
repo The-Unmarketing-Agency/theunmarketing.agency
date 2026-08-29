@@ -265,43 +265,6 @@ img {
     -webkit-backdrop-filter 450ms ease;
 }
 
-/* Special transparent header for Thoughts Article Pages */
-.site-header.transparent .site-header__shell {
-  background: rgba(17, 17, 17, 0) !important; /* Force transparent */
-  backdrop-filter: none !important; /* Remove blur effect */
-  -webkit-backdrop-filter: none !important; /* Remove blur effect */
-  box-shadow: none !important; /* Remove shadow */
-}
-
-/* Improve text contrast when transparent over light backgrounds */
-.site-header.transparent .wordmark__image,
-.site-header.transparent .site-header__desktop-nav a,
-.site-header.transparent .site-header__mobile-nav a {
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5)) !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5) !important;
-}
-
-/* Make SVG logo have readable stroke */
-.site-header.transparent .wordmark__image {
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.7)) !important;
-}
-
-/* Force white logo on transparent headers - HIGH SPECIFICITY */
-.site-header.transparent header.site-header .wordmark__image,
-.site-header.transparent header.site-header .logo {
-  filter: invert(1) !important; /* Black → White */
-  -webkit-filter: invert(1) !important; /* Safari support */
-  mix-blend-mode: difference !important; /* Adapts to background */
-}
-
-/* Even when scrolled on Thoughts pages */
-.site-header.transparent.is-scrolled .site-header__shell {
-  background: rgba(17, 17, 17, 0) !important; /* Stay transparent */
-  backdrop-filter: none !important; /* No blur */
-  -webkit-backdrop-filter: none !important; /* No blur */
-  box-shadow: none !important; /* No shadow */
-}
-
 .site-header.is-scrolled {
   padding-top: 10px;
 }
@@ -333,18 +296,13 @@ img {
   z-index: 3;
 }
 
-/* Logo styling - needs to be visible on transparent headers */
+/* Logo styling */
 .wordmark__image,
 .logo {
   display: block;
   filter: invert(1);  /* Black logo → White logo */
   height: auto;
   max-height: 48px;
-}
-
-/* Ensure logo is visible on transparent headers */
-.site-header.transparent .wordmark__image {
-  filter: invert(1); /* Force white logo */
 }
 
 .site-header .wordmark__image {
