@@ -18,6 +18,8 @@
     "test:matrix": "node scripts/test-all-pages-all-devices.mjs"
   },
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.1121.0",
+    "@aws-sdk/types": "^3.974.5",
     "@next/third-parties": "^16.3.2",
     "@portabletext/react": "7.0.1",
     "@sanity/client": "8.2.0",
@@ -26,8 +28,7 @@
     "next": "16.3.2",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "react-google-recaptcha": "^3.1.0",
-    "resend": "^6.22.0"
+    "react-google-recaptcha": "^3.1.0"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

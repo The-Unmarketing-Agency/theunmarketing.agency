@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
+import { sendContactEmail } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -17,13 +17,13 @@ function field(value: unknown, maxLength: number) {
 }
 
 function escapeHtml(value: string) {
-  return value.replace(/[&<>'"]/g, (character) => {
+  return value.replace(/[&<>\"']/g, (character) => {
     const entities: Record<string, string> = {
       "&": "&amp;",
       "<": "&lt;",
       ">": "&gt;",
       "'": "&#39;",
-      '"': "&quot;",
+      "\"": "&quot;",
     };
     return entities[character];
   });
@@ -69,41 +69,29 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "Please complete all required fields." }, { status: 400 });
   }
 
-  const resendApiKey = process.env.RESEND_API_KEY?.trim();
-  if (!resendApiKey) {
-    // If email delivery service is not configured in local environment, accept gracefully
-    console.warn("RESEND_API_KEY not configured. Contact enquiry received:", { firstName, lastName, email, phone });
+  // If AWS credentials are not configured, accept gracefully
+  if (!process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
+    console.warn("AWS SES credentials not configured. Contact enquiry received:", { firstName, lastName, email, phone });
     return NextResponse.json({ ok: true });
   }
 
-  const to = recipients(process.env.CONTACT_TO_EMAIL) || ["hello@theunmarketing.agency"];
-  const cc = recipients(process.env.CONTACT_CC_EMAIL) || ["gladwyn.lewis@gmail.com"];
-  const from =
-    process.env.CONTACT_FROM_EMAIL?.trim() ||
-    "The Unmarketing Agency <hello@theunmarketing.agency>";
-  const name = [firstName, lastName].filter(Boolean).join(" ");
-  const safeName = escapeHtml(name);
-  const safeEmail = escapeHtml(email);
-  const safePhone = escapeHtml(phone);
-  const safeMessage = escapeHtml(message).replace(/\n/g, "<br />");
-  const subjectName = name.replace(/[\r\n]+/g, " ");
-
   try {
-    const resend = new Resend(resendApiKey);
-    const result = await resend.emails.send({
-      cc,
-      from,
-      html: `<h1>New contact enquiry</h1><p><strong>Name:</strong> ${safeName}</p><p><strong>Email:</strong> ${safeEmail}</p>${safePhone ? `<p><strong>Phone:</strong> ${safePhone}</p>` : ""}<p><strong>Message:</strong><br />${safeMessage}</p>`,
-      replyTo: email,
-      subject: `New contact enquiry from ${subjectName}`,
-      text: `New contact enquiry\n\nName: ${name}\nEmail: ${email}${phone ? `\nPhone: ${phone}` : ""}\n\nMessage:\n${message}`,
-      to,
+    const result = await sendContactEmail({
+      firstName,
+      lastName,
+      email,
+      phone,
+      message
     });
-    if (result.error) throw new Error("Resend rejected the message.");
+
+    if (!result.success) {
+      throw new Error("Failed to send email via AWS SES");
+    }
+
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json(
-      { ok: false, error: "We couldn’t send your enquiry. Please try again shortly." },
+      { ok: false, error: "We couldn't send your enquiry. Please try again shortly." },
       { status: 502 },
     );
   }
