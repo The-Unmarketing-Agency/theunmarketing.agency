@@ -1,4 +1,4 @@
-import { GoogleAnalytics, GoogleTagManager } from "@next/third-parties/google";
+import { GoogleTagManager } from "@next/third-parties/google";
 import type { Metadata, Viewport } from "next";
 import { Manrope, Source_Serif_4 } from "next/font/google";
 import type { ReactNode } from "react";
@@ -22,8 +22,6 @@ const sourceSerif = Source_Serif_4({
   variable: "--font-source-serif",
 });
 
-const googleAnalyticsId =
-  process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID?.trim() || "G-9G195FQ34J";
 const googleTagManagerId = process.env.NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID?.trim();
 
 export const metadata: Metadata = {
@@ -49,7 +47,6 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         {googleTagManagerId?.startsWith("GTM-") ? (
           <GoogleTagManager gtmId={googleTagManagerId} />
         ) : null}
-        {googleAnalyticsId.startsWith("G-") ? <GoogleAnalytics gaId={googleAnalyticsId} /> : null}
       </body>
     </html>
   );
